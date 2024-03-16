@@ -1,0 +1,92 @@
+$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json
+environment:
+  python_requirements_txt: requirements.txt
+inputs:
+  chat_history:
+    type: list
+    is_chat_history: true
+    default: []
+  question:
+    type: string
+    is_chat_input: true
+    default: what's the latest news from sudan an conflict
+outputs:
+  entities:
+    type: string
+    reference: ${extract_entities.output}
+    is_chat_output: false
+  query:
+    type: string
+    reference: ${create_rweb_query.output}
+    is_chat_output: false
+  relieweb_results:
+    type: string
+    reference: ${get_rweb_results.output}
+    is_chat_output: false
+  summary:
+    type: string
+    reference: ${summarize.output}
+    is_chat_output: false
+  output:
+    type: string
+    reference: ${process_output.output}
+    is_chat_output: true
+  references:
+    type: string
+    reference: ${extract_references.output}
+nodes:
+- name: extract_entities
+  type: llm
+  source:
+    type: code
+    path: extract_entities.jinja2
+  inputs:
+    deployment_name: gpt-35-turbo
+    temperature: 0
+    text: ${inputs.question}
+  connection: azure_openai
+  api: chat
+- name: create_rweb_query
+  type: llm
+  source:
+    type: code
+    path: create_rweb_query.jinja2
+  inputs:
+    deployment_name: gpt-35-turbo
+    temperature: 0
+    question: ${extract_entities.output}
+  connection: azure_openai
+  api: chat
+- name: get_rweb_results
+  type: python
+  source:
+    type: code
+    path: get_rweb_results.py
+  inputs:
+    query: ${create_rweb_query.output}
+- name: summarize
+  type: llm
+  source:
+    type: code
+    path: summarize.jinja2
+  inputs:
+    deployment_name: gpt-35-turbo-16k
+    temperature: 0
+    text: ${get_rweb_results.output}
+  connection: azure_openai
+  api: chat
+- name: process_output
+  type: python
+  source:
+    type: code
+    path: process_output.py
+  inputs:
+    result: ${summarize.output}
+    refs: ${extract_references.output}
+- name: extract_references
+  type: python
+  source:
+    type: code
+    path: extract_references.py
+  inputs:
+    results: ${get_rweb_results.output}
