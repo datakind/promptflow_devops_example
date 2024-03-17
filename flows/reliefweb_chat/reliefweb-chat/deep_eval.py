@@ -8,9 +8,33 @@ from deepeval.test_case import LLMTestCase
 from langchain_openai import AzureChatOpenAI
 from langchain_openai import ChatOpenAI
 import os
+from langchain_openai import AzureChatOpenAI
+from deepeval.models.base_model import DeepEvalBaseLLM
 
 from dotenv import load_dotenv
 load_dotenv('../../.env')
+
+class AzureOpenAI(DeepEvalBaseLLM):
+    def __init__(
+        self,
+        model
+    ):
+        self.model = model
+
+    def load_model(self):
+        return self.model
+
+    def generate(self, prompt: str) -> str:
+        chat_model = self.load_model()
+        return chat_model.invoke(prompt).content
+
+    async def a_generate(self, prompt: str) -> str:
+        chat_model = self.load_model()
+        res = await chat_model.ainvoke(prompt)
+        return res.content
+
+    def get_model_name(self):
+        return "Custom Azure OpenAI Model"
 
 # Deep eval, see https://github.com/confident-ai/deepeval
 
@@ -24,7 +48,23 @@ def test_case(processed_output: dict):
 
     actual_output = processed_output['llm_summary_result_processed']
 
-    # What if we ta
+    # OpenAI
+    #model = ChatOpenAI(
+    #    # model_name="gpt-3.5-turbo",
+    #    model_name="gpt-3.5-turbo-16k",
+    #    api_key=os.getenv("OPENAI_API_KEY"),
+    #    temperature=1,
+    #    max_tokens=1000,
+    #)
+
+    # Azure OpenAI
+    custom_model = AzureChatOpenAI(
+        openai_api_version=os.getenv("OPENAI_API_VERSION"),
+        azure_deployment=os.getenv("DEPLOYMENT_NAME"),
+        azure_endpoint=os.getenv("BASE_URL"),
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+    )
+    model = AzureOpenAI(model=custom_model)
 
     #answer_relevancy_metric = AnswerRelevancyMetric(threshold=0.5)
     #test_case = LLMTestCase(
@@ -42,12 +82,11 @@ def test_case(processed_output: dict):
     test_case = LLMTestCase(input=input, actual_output=actual_output)
     metric = SummarizationMetric(
         threshold=0.5,
-        model="gpt-4",
-        #assessment_questions=[
-        #    "Is the coverage score based on a percentage of 'yes' answers?",
-        #    "Does the score ensure the summary's accuracy with the source?",
-        #    "Does a higher score mean a more comprehensive summary?"
-        #]
+        model=model,
+        assessment_questions=[
+            "What are the key events that happened?",
+            processed_output['user_question']
+        ]
     )
 
     metric.measure(test_case)
@@ -78,18 +117,25 @@ if __name__ == "__main__":
     with a higher score indicating greater comprehensiveness.
     """
 
-    input = "714 cows walked from top to bottom fields last friday"
-    actual_output = input
+    # Replace these with real values
+    custom_model = AzureChatOpenAI(
+        openai_api_version=os.getenv("OPENAI_API_VERSION"),
+        azure_deployment=os.getenv("DEPLOYMENT_NAME"),
+        azure_endpoint=os.getenv("BASE_URL"),
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+    )
+    model = AzureOpenAI(model=custom_model)
 
     test_case = LLMTestCase(input=input, actual_output=actual_output)
     metric = SummarizationMetric(
         threshold=0.5,
-        model="gpt-4",
-        assessment_questions=[
-            "Is the coverage score based on a percentage of 'yes' answers?",
-            "Does the score ensure the summary's accuracy with the source?",
-            "Does a higher score mean a more comprehensive summary?"
-        ]
+        model=model,
+        # Score can be determined with set questions
+        #assessment_questions=[
+        #    "Is the coverage score based on a percentage of 'yes' answers?",
+        #    "Does the score ensure the summary's accuracy with the source?",
+        #    "Does a higher score mean a more comprehensive summary?"
+        #]
     )
 
     metric.measure(test_case)
