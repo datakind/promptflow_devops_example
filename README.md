@@ -33,3 +33,9 @@ Promptflow can be run from the commandline, see [documentation](https://microsof
 6. Select the conda environment `promptflow-serve`
 7. Re-open `flow.dag.yaml`, select 'visual editor' at the top to see the lovely user interface
 8. To run the flows click the play icon at the top of the promptflow user interface 
+
+You will also need to configure LLM keys. The demo assumes Azure OpenAI, but scripts can also support OpenAI direct. To configure your LLM environment ...
+
+1. Copy `.env.example` to `.env`
+2. Set keys appropriately
+
