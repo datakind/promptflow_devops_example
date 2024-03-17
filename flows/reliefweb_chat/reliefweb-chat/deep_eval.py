@@ -84,8 +84,10 @@ def test_case(processed_output: dict):
         threshold=0.5,
         model=model,
         assessment_questions=[
-            "What are the key events that happened?",
-            processed_output['user_question']
+            "What organizations are mentioned?",
+            "How many people, organizations or countries are involved?",
+            "What types of situations are mentioned?"
+            #processed_output['user_question']
         ]
     )
 
