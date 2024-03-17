@@ -54,7 +54,7 @@ def get_rweb_data(query: dict, endpoint: str) -> list:
     response = requests.post(url, json=query)
     if response.status_code == 200:
         answer = response.json()
-        print(answer)
+        #print(answer)
     else:
         print("Error: No data was returned for keyword")
         query = str(query).replace("'",'"')
@@ -83,10 +83,10 @@ def get_rweb_data(query: dict, endpoint: str) -> list:
 
 
 def get_rweb_reports_and_news_data(keyword: str='', 
-    date_from: str = "2023-01-01T00:00:00+00:00", \
-    date_to: str = "2025-01-01T00:00:00+00:00", \
+    date_from: str = None, \
+    date_to: str = None, \
     disaster_id: str=None, 
-    sort: str="date.created:desc",\
+    sort: str=None,\
     limit: int = 10, \
     offset: int = 0, \
     format_name: str = None) -> list:
@@ -107,13 +107,16 @@ def get_rweb_reports_and_news_data(keyword: str='',
         str: The retrieved reports and news data in string format.
     """
     
-    date_from = convert_to_iso8601(date_from)
-    date_to = convert_to_iso8601(date_to)
-
     endpoint = "reports"
     filter = {
-        "operator": "AND",
-        "conditions": [
+        "conditions": []
+    }
+
+    if date_from != None and date_to != None:
+        date_from = convert_to_iso8601(date_from)
+        date_to = convert_to_iso8601(date_to)
+        filter_conditions = filter['conditions']
+        filter_conditions.append(
             {
                 "field": "date.created",
                 "value": {
@@ -121,8 +124,9 @@ def get_rweb_reports_and_news_data(keyword: str='',
                     "to": date_to
                 }
             }
-        ]
-    }
+        )
+        filter['conditions'] = filter_conditions
+
     if disaster_id != None:
         filter_conditions = filter['conditions']
         filter_conditions.append(
@@ -149,7 +153,8 @@ def get_rweb_reports_and_news_data(keyword: str='',
     query = {  
         "appname": "myapp",  
         "query": {  
-            "value": keyword
+            "value": keyword,
+            "operator": "AND"
         },  
         "filter":filter,
         "limit": limit,  
@@ -167,9 +172,9 @@ def get_rweb_reports_and_news_data(keyword: str='',
 
 
 def get_rweb_disasters_data(keyword: str='', \
-    date_from: str = "2023-01-01T00:00:00+00:00", \
-    date_to: str = "2025-01-01T00:00:00+00:00",
-    sort: str = "date.event:desc", \
+    date_from: str = None, \
+    date_to: str = None ,
+    sort: str = None, \
     limit: int = 20, \
     offset: int = 0, \
     status: str = None, \
@@ -197,22 +202,26 @@ def get_rweb_disasters_data(keyword: str='', \
         str: JSON string containing the retrieved disaster data.
     """
     
-    date_from = convert_to_iso8601(date_from)
-    date_to = convert_to_iso8601(date_to)
-
     endpoint = "disasters"
     filter = {
             "operator": "AND",
-            "conditions": [
-                {
-                    "field": "date.event",
-                    "value": {
-                        "from": date_from,
-                        "to": date_to
-                    }
-                }
-            ]
+            "conditions": []
     }
+    if date_from != None and date_to != None:
+        date_from = convert_to_iso8601(date_from)
+        date_to = convert_to_iso8601(date_to)
+        filter_conditions = filter['conditions']
+        filter_conditions.append(
+            {
+                "field": "date.event",
+                "value": {
+                    "from": date_from,
+                    "to": date_to
+                }
+            }
+        )
+        filter['conditions'] = filter_conditions
+
     if status != None:
         filter_conditions = filter['conditions']
         filter_conditions.append(
@@ -301,7 +310,8 @@ def get_data(query=None) -> str:
     #    "Statistical Snapshot"
     #],
 
-    result = get_rweb_reports_and_news_data(query, limit=5, format_name = "Situation Report", sort=None)
+    result = get_rweb_reports_and_news_data(keyword=query, date_from=None, date_to=None, \
+                sort=None, limit=5, offset=0, format_name='Situation Report')
 
     # These are report disaster_type options as extracted from ReliefWeb API
     # [
@@ -331,8 +341,18 @@ def get_data(query=None) -> str:
     #result = get_rweb_disasters_data(query, limit=1)
 
     result = json.dumps(json.loads(result), indent=4)
-    print(result)
+    #print(result)
     
-
     return result
 
+
+if __name__ == "__main__":
+    query = "sudan crises"
+    result = get_rweb_reports_and_news_data(keyword=query, date_from=None, date_to=None, \
+                                            sort=None, limit=5, offset=0, format_name='Situation Report')
+    result = json.loads(json.dumps(json.loads(result), indent=4))
+    print("\n\n")
+    for r in result:
+        print(r['title'])
+        print(r['primary_country']['name'])
+        print()

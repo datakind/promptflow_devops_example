@@ -6,7 +6,7 @@ import ast
 
 @tool
 def extract_references(results: str) -> str:
-    results = json.loads(json.loads(results))
+    results = json.loads(results)
     refs = []
     for r in results:
         ref = {}
