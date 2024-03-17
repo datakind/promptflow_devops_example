@@ -147,8 +147,10 @@ def get_rweb_reports_and_news_data(keyword: str='',
         filter['conditions'] = filter_conditions 
     limit = 5 
     fields = {  
-        "include": ["title", "body", "url", "source", "date", "format", "theme", "country", \
-                    "status", "primary_country", "disaster", "language", "id"] 
+        #"include": ["title", "body", "url", "source", "date", "format", "theme", "country", \
+        #            "status", "primary_country", "disaster", "language", "id"] 
+        "include": ["title", "body", "url", "source", "date", "format", "theme",  \
+                    "status", "primary_country", "id"] 
     }  
     query = {  
         "appname": "myapp",  

@@ -9,31 +9,15 @@ inputs:
   question:
     type: string
     is_chat_input: true
-    default: what's the latest news from sudan an conflict
+    default: what's the latest news from sudan
 outputs:
-  entities:
-    type: string
-    reference: ${extract_entities.output}
-    is_chat_output: false
-  query:
-    type: string
-    reference: ${create_rweb_query.output}
-    is_chat_output: false
-  relieweb_results:
-    type: string
-    reference: ${get_rweb_results.output}
-    is_chat_output: false
-  summary:
-    type: string
-    reference: ${summarize.output}
-    is_chat_output: false
   output:
     type: string
-    reference: ${process_output.output}
+    reference: ${process_output.output.text_output}
     is_chat_output: true
-  references:
+  full_output:
     type: string
-    reference: ${extract_references.output}
+    reference: ${process_output.output}
 nodes:
 - name: extract_entities
   type: llm
@@ -46,6 +30,9 @@ nodes:
     text: ${inputs.question}
   connection: azure_openai
   api: chat
+  activate:
+    when: ${content_safety.output.suggested_action}
+    is: Accept
 - name: create_rweb_query
   type: llm
   source:
@@ -81,8 +68,14 @@ nodes:
     type: code
     path: process_output.py
   inputs:
-    result: ${summarize.output}
     refs: ${extract_references.output}
+    user_question: ${inputs.question}
+    query_entities: ${extract_entities.output}
+    rweb_results: ${get_rweb_results.output}
+    llm_summary_result: ${summarize.output}
+    llm_question_result: ${answer_question.output}
+    rweb_query: ${create_rweb_query.output}
+    content_safety_result: ${content_safety.output.suggested_action}
 - name: extract_references
   type: python
   source:
@@ -90,3 +83,26 @@ nodes:
     path: extract_references.py
   inputs:
     results: ${get_rweb_results.output}
+- name: answer_question
+  type: llm
+  source:
+    type: code
+    path: answer_question.jinja2
+  inputs:
+    deployment_name: gpt-35-turbo-16k
+    temperature: 0
+    response_format:
+      type: json_object
+    chat_history: ${inputs.chat_history}
+    question: ${inputs.question}
+    reliefweb_data: ${get_rweb_results.output}
+  connection: azure_openai
+  api: chat
+- name: content_safety
+  type: python
+  source:
+    type: package
+    tool: promptflow.tools.azure_content_safety.analyze_text
+  inputs:
+    connection: azure_content_safety_connection
+    text: ${inputs.question}
