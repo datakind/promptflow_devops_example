@@ -9,6 +9,78 @@ inputs:
   question:
     type: string
     default: what's the latest news about the sudan crises?
+  context:
+    type: string
+    default: >
+      "SUMMARY:\n\n The humanitarian situation across Sudan, South Sudan, and
+      Chad is dire, with escalating conflict, displacement, and climate shocks
+      creating a severe crisis. The conflict between the Sudanese Armed Forces
+      (SAF) and the Rapid Support Forces (RSF) in Sudan is ongoing, with the RSF
+      capturing several towns and raising concerns about further expansion. This
+      has led to significant displacement, with a WFP warehouse looted and staff
+      relocated. South Sudan's Renk County State is a primary entry for those
+      fleeing the conflict, with over 452,000 individuals from Sudan arriving
+      since mid-April 2023. In Chad, 5.8 million people require humanitarian
+      assistance, with nearly 500,000 Sudanese refugees arriving since April
+      2023, exacerbating the strain on resources.\n\nThe Emergency
+      Telecommunications Cluster (ETC), led by WFP, was activated in Sudan due
+      to the conflict, with telecommunications and power grid damages impacting
+      response efforts. The ETC is providing critical communications services in
+      several locations, although some activities are on hold or disrupted due
+      to security concerns.\n\nUNICEF's report on the West and Central Africa
+      Region highlights the escalation of armed conflict and inter-communal
+      clashes, particularly in the eastern DRC, which displaced over 1.1 million
+      people. Conflicts in Sudan and Mali have caused significant refugee flows
+      into neighboring countries, and military coups in Niger and Gabon have
+      disrupted children's access to services. Health emergencies, including
+      outbreaks of Marburg, polio, dengue fever, diphtheria, and cholera, have
+      strained health services, and severe flooding in Guinea, the Gambia, and
+      the Republic of Congo has displaced many people.\n\nThe Famine Early
+      Warning Systems Network (FEWS NET) warns that the conflict in Sudan's
+      breadbasket threatens national food availability, with one-third of the
+      population in need of emergency food assistance. The lean season is
+      expected to bring deepening hunger in high-risk areas.\n\nWFP's South
+      Sudan Country Brief for December 2023 reports on the distribution of 9,800
+      mt of food and USD 4.3 million in cash-based transfers, assisting 1.1
+      million people, including those affected by the Sudan conflict. WFP
+      assisted 5.3 million people in 2023, with 399,000 people receiving
+      assistance since the start of the Sudan crisis. Nutrition programs have
+      been provided for children and pregnant and breastfeeding women and
+      girls.\n\nOrganizations mentioned include the World Food Programme (WFP),
+      UN High Commissioner for Refugees (UNHCR), International Organization for
+      Migration (IOM), Emergency Telecommunications Cluster (ETC), UN Children's
+      Fund (UNICEF), and Famine Early Warning Systems Network (FEWS NET).
+      Individuals mentioned include Emily Turano, a Senior Food Security Analyst
+      at FEWS NET, and Hannah Button, Communications Lead at FEWS
+      NET.\n\nANSWER:\n\nThe latest news about the Sudan crisis is the \"Sudan
+      Regional Crisis: Emergency Situation Update, January 2024\" report
+      published by Relief International. The report highlights the ongoing
+      battle between the Sudanese Armed Forces (SAF) and the Rapid Support
+      Forces (RSF), which shows no signs of abating. The RSF offensive has
+      captured several towns in Al Jazira, including Wad Madani, the
+      second-largest city, raising concerns about further expansion towards
+      southern and eastern regions. Confrontations between SAF and RSF have also
+      occurred in various regions, including West Kordofan, Nyala, South Darfur,
+      and El Fasher. The report also mentions the significant displacement of
+      internally displaced persons (IDPs) and host communities due to the
+      looting of a WFP warehouse in Al Jazeera. The crisis in Sudan is
+      interconnected with the crises in South Sudan and Chad, all of which
+      require immediate global attention. You can find more information in the
+      report
+      [here](https://reliefweb.int/node/4042678).\n\nREFERENCES:\n\n[{'title':
+      'Sudan Regional Crisis: Emergency Situation Update, January 2024', 'url':
+      'https://reliefweb.int/node/4042678', 'source': ['Relief International']},
+      {'title': 'Sudan, conflict - ETC Situation Report #15 Reporting period:
+      01/02/2024 to 29/02/2024', 'url': 'https://reliefweb.int/node/4042273',
+      'source': ['Emergency Telecommunications Cluster', 'World Food
+      Programme']}, {'title': 'UNICEF West and Central Africa Region
+      Humanitarian Situation Report No. 2, 1 January - 31 December 2023', 'url':
+      'https://reliefweb.int/node/4041636', 'source': [\"UN Children's Fund\"]},
+      {'title': 'Sudan Food Security Alert, February 1, 2024', 'url':
+      'https://reliefweb.int/node/4034771', 'source': ['Famine Early Warning
+      System Network']}, {'title': 'WFP South Sudan Country Brief, December
+      2023', 'url': 'https://reliefweb.int/node/4034066', 'source': ['World Food
+      Programme']}]",
 outputs:
   output:
     type: string
@@ -103,6 +175,33 @@ nodes:
     path: deep_eval.py
   inputs:
     processed_output: ${process_output.output}
+- name: concatenate_scores
+  type: python
+  source:
+    type: code
+    path: concatenate_scores.py
+  inputs:
+    groundesness_score: ${groundedness_check.output}
+- name: groundedness_check
+  type: llm
+  source:
+    type: code
+    path: groundedness_check.jinja2
+  inputs:
+    deployment_name: gpt-4-turbo
+    temperature: 0
+    answer: ${process_output.output}
+    context: ${inputs.context}
+  connection: azure_openai
+  api: chat
+- name: aggregate_variant_results
+  type: python
+  source:
+    type: code
+    path: aggregate_variant_results.py
+  inputs:
+    results: ${concatenate_scores.output}
+  aggregation: true
 node_variants:
   summarize:
     default_variant_id: variant_0

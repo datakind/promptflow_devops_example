@@ -36,4 +36,5 @@ def concat_results(groundesness_score: str):
         item_name = str(item["name"])
         variant_level_result[item_name] = item["score"]
         variant_level_result[item_name + "_pass_rate"] = 1 if item["score"] > 3 else 0
+        
     return variant_level_result
