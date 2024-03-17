@@ -8,7 +8,6 @@ inputs:
     default: []
   question:
     type: string
-    is_chat_input: true
     default: what's the latest news from sudan
 outputs:
   output:
@@ -106,3 +105,10 @@ nodes:
   inputs:
     connection: azure_content_safety_connection
     text: ${inputs.question}
+- name: deep_eval
+  type: python
+  source:
+    type: code
+    path: deep_eval.py
+  inputs:
+    processed_output: ${process_output.output}

@@ -32,6 +32,7 @@ def process_output(user_question: str, query_entities: str, rweb_query: str, rwe
         full_output['text_output'] = "Content safety check failed. Please try again with a different question."
 
     full_output['content_safety_result'] = content_safety_result
+    
     with open('output.json', 'w') as f:
         json.dump(full_output, f, indent=4)
 

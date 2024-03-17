@@ -26,3 +26,4 @@ pyogrio==0.7.2
 hdx_python_api==6.2.1
 pycountry==23.12.11
 streamlit_code_editor==0.1.10
+deepeval==0.20.97
