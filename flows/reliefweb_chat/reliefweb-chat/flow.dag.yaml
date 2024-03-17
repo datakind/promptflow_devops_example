@@ -51,16 +51,7 @@ nodes:
   inputs:
     query: ${create_rweb_query.output}
 - name: summarize
-  type: llm
-  source:
-    type: code
-    path: summarize.jinja2
-  inputs:
-    deployment_name: gpt-35-turbo-16k
-    temperature: 0
-    text: ${get_rweb_results.output}
-  connection: azure_openai
-  api: chat
+  use_variants: true
 - name: process_output
   type: python
   source:
@@ -112,3 +103,35 @@ nodes:
     path: deep_eval.py
   inputs:
     processed_output: ${process_output.output}
+node_variants:
+  summarize:
+    default_variant_id: variant_0
+    variants:
+      variant_0:
+        node:
+          type: llm
+          source:
+            type: code
+            path: summarize_basic.jinja2
+          inputs:
+            deployment_name: gpt-4-turbo
+            temperature: 0
+            text: ${get_rweb_results.output}
+            response_format:
+              type: json_object
+          connection: azure_openai
+          api: chat
+      variant_1:
+        node:
+          type: llm
+          source:
+            type: code
+            path: summarize_cod.jinja2
+          inputs:
+            deployment_name: gpt-4-turbo
+            temperature: 0
+            text: ${get_rweb_results.output}
+            response_format:
+              type: json_object
+          connection: azure_openai
+          api: chat

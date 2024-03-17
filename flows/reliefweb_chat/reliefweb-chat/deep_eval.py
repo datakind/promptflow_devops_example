@@ -54,6 +54,12 @@ def test_case(processed_output: dict):
     print(metric.score)
     print(metric.reason)
 
+    return {
+        "summarization_score": metric.score,
+        "summarization_score_reason": metric.reason
+    }
+
+# Just for testing
 if __name__ == "__main__":
     # This is the original text to be summarized
     input = """
