@@ -10,7 +10,7 @@ This repo contains sample code for workshops on using Promptflow as part of oper
 4. Extracts references 
 5. Presents results to the user
 
-The flow also includes:
+The flow also includes: 
 
 1. Content safety filtering
 2. Prompt variants
