@@ -33,7 +33,7 @@ jobs:
       with:
         python-version: "3.11.4"
     - run: |
-        pip install -r requirements.txt
+        pip install -r ./flows/reliefweb_chat/requirements.txt
     - run: |
         env
         cd flows/reliefweb_chat
