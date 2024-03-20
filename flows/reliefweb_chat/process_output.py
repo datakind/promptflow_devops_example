@@ -38,8 +38,8 @@ def process_output(user_question: str, query_entities: str, rweb_query: str, rwe
             "llm_question_result": llm_question_result,
             "refs": refs
         }
-        full_output['text_output'] = f"SUMMARY:\n\n {llm_summary_result_processed}\n\nANSWER:\n\n{llm_question_result}\n\nREFERENCES:\n\n{refs}"
-
+        full_output['text_output'] = llm_question_result
+        
         # Write data to jsonl to get content for data.jsonl
         with jsonlines.open('output.jsonl', mode='w') as writer:
             r = {}
