@@ -4,6 +4,7 @@ import pytest
 from deepeval import assert_test
 from deepeval.metrics import AnswerRelevancyMetric
 from deepeval.metrics import SummarizationMetric
+from deepeval.metrics import FaithfulnessMetric
 from deepeval.test_case import LLMTestCase
 from langchain_openai import AzureChatOpenAI
 from langchain_openai import ChatOpenAI
@@ -82,16 +83,27 @@ def test_case(processed_output: dict, conn: AzureOpenAIConnection, deployment_na
     print("=======")
     print(actual_output)
 
-    test_case = LLMTestCase(input=input, actual_output=actual_output)
-    metric = SummarizationMetric(
-        threshold=0.5,
+    #test_case = LLMTestCase(input=input, actual_output=actual_output)
+    #metric = SummarizationMetric(
+    #    threshold=0.5,
+    #    model=model,
+    #    #assessment_questions=[
+    #    #    "Which organizations are mentioned?",
+    #    #    "How many people, organizations or countries are involved?",
+    #    #    "What types of situations are mentioned?"
+    #    #    #processed_output['user_question']
+    #    #]
+    #)
+
+    user_question = processed_output['user_question']
+    #actual_output = processed_output['llm_summary_result_processed']
+    actual_output = processed_output["llm_question_result"],
+    rweb_results = str(processed_output['rweb_results'])
+    test_case = LLMTestCase(input=user_question, actual_output=actual_output, retrieval_context=[rweb_results])
+    metric = FaithfulnessMetric(
+        threshold=0.7,
         model=model,
-        #assessment_questions=[
-        #    "Which organizations are mentioned?",
-        #    "How many people, organizations or countries are involved?",
-        #    "What types of situations are mentioned?"
-        #    #processed_output['user_question']
-        #]
+        include_reason=True
     )
 
     metric.measure(test_case)
@@ -99,8 +111,8 @@ def test_case(processed_output: dict, conn: AzureOpenAIConnection, deployment_na
     print(metric.reason)
 
     return {
-        "summarization_score": metric.score,
-        "summarization_score_reason": metric.reason
+        "deepeval_score": metric.score,
+        "deepevalscore_reason": metric.reason
     }
 
 # Just for testing

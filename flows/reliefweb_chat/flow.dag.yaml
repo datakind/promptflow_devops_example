@@ -8,7 +8,7 @@ inputs:
     default: []
   question:
     type: string
-    default: what's the latest news about the sudan crises?
+    default: How many people are facing food insecurity due to the Sudan crisis?
   context:
     type: string
     default: >
@@ -176,7 +176,7 @@ nodes:
   inputs:
     processed_output: ${process_output.output}
     conn: azure_openai
-    deployment_name: gpt-4-turbo
+    deployment_name: gpt-35-turbo-16k
 - name: concatenate_scores
   type: python
   source:
@@ -190,7 +190,7 @@ nodes:
     type: code
     path: groundedness_check.jinja2
   inputs:
-    deployment_name: gpt-4-turbo
+    deployment_name: gpt-4-32k
     temperature: 0
     answer: ${process_output.output}
     context: ${inputs.context}
@@ -215,7 +215,7 @@ node_variants:
             type: code
             path: summarize_basic.jinja2
           inputs:
-            deployment_name: gpt-4-turbo
+            deployment_name: gpt-35-turbo-16k
             temperature: 0
             text: ${get_rweb_results.output}
             response_format:

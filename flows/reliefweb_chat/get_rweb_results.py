@@ -87,7 +87,7 @@ def get_rweb_reports_and_news_data(keyword: str='',
     date_to: str = None, \
     disaster_id: str=None, 
     sort: str=None,\
-    limit: int = 10, \
+    limit: int = 5, \
     offset: int = 0, \
     format_name: str = None) -> list:
     """
@@ -149,7 +149,7 @@ def get_rweb_reports_and_news_data(keyword: str='',
     fields = {  
         #"include": ["title", "body", "url", "source", "date", "format", "theme", "country", \
         #            "status", "primary_country", "disaster", "language", "id"] 
-        "include": ["title", "body", "url", "source", "date", "format", "theme",  \
+        "include": ["title", "body", "url", "source", "date", "format",   \
                     "status", "primary_country", "id"] 
     }  
     query = {  

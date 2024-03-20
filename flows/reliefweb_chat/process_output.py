@@ -43,8 +43,8 @@ def process_output(user_question: str, query_entities: str, rweb_query: str, rwe
         # Write data to jsonl to get content for data.jsonl
         with jsonlines.open('output.jsonl', mode='w') as writer:
             r = {}
+            r['chat_history'] = []
             r['question'] = full_output['user_question']
-            r['result'] = str(full_output['llm_summary_result'])
             r['context'] = str(full_output['rweb_results'])
             writer.write(r)
     else:
