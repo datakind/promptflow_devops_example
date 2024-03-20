@@ -1,65 +1,108 @@
-
-from promptflow import tool
-import pytest
-from deepeval import assert_test
-from deepeval.metrics import AnswerRelevancyMetric
-from deepeval.metrics import SummarizationMetric
-from deepeval.metrics import FaithfulnessMetric
-from deepeval.test_case import LLMTestCase
-from langchain_openai import AzureChatOpenAI
-from langchain_openai import ChatOpenAI
 import os
-from langchain_openai import AzureChatOpenAI
+
+from deepeval.metrics import FaithfulnessMetric, SummarizationMetric
 from deepeval.models.base_model import DeepEvalBaseLLM
+from deepeval.test_case import LLMTestCase
+from dotenv import load_dotenv
+from langchain_openai import AzureChatOpenAI
+from promptflow import tool
 from promptflow.connections import AzureOpenAIConnection
 
-from dotenv import load_dotenv
-load_dotenv('../../.env')
+load_dotenv("../../.env")
+
 
 class AzureOpenAI(DeepEvalBaseLLM):
-    def __init__(
-        self,
-        model
-    ):
+    """
+    A class representing a custom Azure OpenAI model.
+
+    Attributes:
+        model: The underlying model used for generating responses.
+
+    Methods:
+        load_model: Loads the model.
+        generate: Generates a response given a prompt.
+        a_generate: Asynchronously generates a response given a prompt.
+        get_model_name: Returns the name of the model.
+    """
+
+    def __init__(self, model):
+        """
+        Initializes an instance of the DeepEval class.
+
+        Parameters:
+        model (object): The model object to be used for evaluation.
+        """
         self.model = model
 
     def load_model(self):
+        """
+        Loads and returns the model.
+
+        Returns:
+            The loaded model.
+        """
         return self.model
 
     def generate(self, prompt: str) -> str:
+        """
+        Generates a response based on the given prompt using the chat model.
+
+        Args:
+            prompt (str): The prompt to generate a response for.
+
+        Returns:
+            str: The generated response.
+        """
         chat_model = self.load_model()
         return chat_model.invoke(prompt).content
 
     async def a_generate(self, prompt: str) -> str:
+        """
+        Generates a response using the chat model.
+
+        Args:
+            prompt (str): The prompt for generating the response.
+
+        Returns:
+            str: The generated response.
+        """
         chat_model = self.load_model()
         res = await chat_model.ainvoke(prompt)
         return res.content
 
     def get_model_name(self):
+        """
+        Returns the name of the custom Azure OpenAI model.
+        """
         return "Custom Azure OpenAI Model"
+
 
 # Deep eval, see https://github.com/confident-ai/deepeval
 
-@tool
-def test_case(processed_output: dict, conn: AzureOpenAIConnection, deployment_name: str):
 
+@tool
+def test_case(
+    processed_output: dict, conn: AzureOpenAIConnection, deployment_name: str
+):
+    """
+    Evaluate the test case using the processed output, AzureOpenAIConnection, and deployment name.
+
+    Args:
+        processed_output (dict): The processed output containing the necessary data for evaluation.
+        conn (AzureOpenAIConnection): The AzureOpenAIConnection object for connecting to Azure services.
+        deployment_name (str): The name of the deployment.
+
+    Returns:
+        dict: A dictionary containing the evaluation score and reason.
+    """
     conn_dict = dict(conn)
 
-    rweb_results = processed_output['rweb_results']
+    rweb_results = processed_output["rweb_results"]
     input = ""
     for r in rweb_results:
-        input += r['title'] + " " + str(r['body']) 
+        input += r["title"] + " " + str(r["body"])
 
-    actual_output = processed_output['llm_summary_result_processed']
-
-    # OpenAI
-    #model = ChatOpenAI(
-    #    # model_name="gpt-3.5-turbo",
-    #    model_name="gpt-3.5-turbo-16k",
-    #    api_key=os.getenv("OPENAI_API_KEY"),
-    #    temperature=1,
-    #    max_tokens=1000,
-    #)
+    actual_output = processed_output["llm_summary_result_processed"]
 
     custom_model = AzureChatOpenAI(
         openai_api_version=conn_dict["api_version"],
@@ -70,91 +113,16 @@ def test_case(processed_output: dict, conn: AzureOpenAIConnection, deployment_na
 
     model = AzureOpenAI(model=custom_model)
 
-    #answer_relevancy_metric = AnswerRelevancyMetric(threshold=0.5)
-    #test_case = LLMTestCase(
-    #    input="What if these shoes don't fit?",
-    #    # Replace this with the actual output from your LLM application
-    #    actual_output=llm_model_summary,
-    #    retrieval_context=[raw_text]
-    #)
-    #assert_test(test_case, [answer_relevancy_metric])
-
-    print(input)
-    print("=======")
-    print(actual_output)
-
-    #test_case = LLMTestCase(input=input, actual_output=actual_output)
-    #metric = SummarizationMetric(
-    #    threshold=0.5,
-    #    model=model,
-    #    #assessment_questions=[
-    #    #    "Which organizations are mentioned?",
-    #    #    "How many people, organizations or countries are involved?",
-    #    #    "What types of situations are mentioned?"
-    #    #    #processed_output['user_question']
-    #    #]
-    #)
-
-    user_question = processed_output['user_question']
-    #actual_output = processed_output['llm_summary_result_processed']
-    actual_output = processed_output["llm_question_result"],
-    rweb_results = str(processed_output['rweb_results'])
-    test_case = LLMTestCase(input=user_question, actual_output=actual_output, retrieval_context=[rweb_results])
-    metric = FaithfulnessMetric(
-        threshold=0.7,
-        model=model,
-        include_reason=True
+    user_question = processed_output["user_question"]
+    actual_output = (processed_output["llm_question_result"],)
+    rweb_results = str(processed_output["rweb_results"])
+    test_case = LLMTestCase(
+        input=user_question,
+        actual_output=actual_output,
+        retrieval_context=[rweb_results],
     )
+    metric = FaithfulnessMetric(threshold=0.7, model=model, include_reason=True)
 
     metric.measure(test_case)
-    print(metric.score)
-    print(metric.reason)
 
-    return {
-        "deepeval_score": metric.score,
-        "deepevalscore_reason": metric.reason
-    }
-
-# Just for testing
-if __name__ == "__main__":
-    # This is the original text to be summarized
-    input = """
-    The 'coverage score' is calculated as the percentage of assessment questions
-    for which both the summary and the original document provide a 'yes' answer. This
-    method ensures that the summary not only includes key information from the original
-    text but also accurately represents it. A higher coverage score indicates a
-    more comprehensive and faithful summary, signifying that the summary effectively
-    encapsulates the crucial points and details from the original content.
-    """
-
-    # This is the summary, replace this with the actual output from your LLM application
-    actual_output="""
-    The coverage score quantifies how well a summary captures and
-    accurately represents key information from the original text,
-    with a higher score indicating greater comprehensiveness.
-    """
-
-    # Replace these with real values
-    custom_model = AzureChatOpenAI(
-        openai_api_version=os.getenv("OPENAI_API_VERSION"),
-        azure_deployment=os.getenv("DEPLOYMENT_NAME"),
-        azure_endpoint=os.getenv("BASE_URL"),
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
-    )
-    model = AzureOpenAI(model=custom_model)
-
-    test_case = LLMTestCase(input=input, actual_output=actual_output)
-    metric = SummarizationMetric(
-        threshold=0.5,
-        model=model,
-        # Score can be determined with set questions
-        #assessment_questions=[
-        #    "Is the coverage score based on a percentage of 'yes' answers?",
-        #    "Does the score ensure the summary's accuracy with the source?",
-        #    "Does a higher score mean a more comprehensive summary?"
-        #]
-    )
-
-    metric.measure(test_case)
-    print(metric.score)
-    print(metric.reason)
+    return {"deepeval_score": metric.score, "deepevalscore_reason": metric.reason}

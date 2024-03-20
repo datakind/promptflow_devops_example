@@ -11,13 +11,13 @@ inputs:
     default: What is the current status of internet providers in the Sudan crises?
   context:
     type: string
-    default: "According to the Emergency Telecommunications Cluster (ETC)
-      Situation Report, as of February 2024, all three of Sudan's main internet
-      operators were reported as offline on February 7th, resulting in a
-      nationwide network blackout of communications affecting millions of
-      people. The report also mentions that the ETC called a meeting with all
-      partners to discuss the communications outages and coordinate safety
-      measures for staff amid the urgent security situation."
+    default: According to the Emergency Telecommunications Cluster (ETC) Situation
+      Report, as of February 2024, all three of Sudan's main internet operators
+      were reported as offline on February 7th, resulting in a nationwide
+      network blackout of communications affecting millions of people. The
+      report also mentions that the ETC called a meeting with all partners to
+      discuss the communications outages and coordinate safety measures for
+      staff amid the urgent security situation.
 outputs:
   output:
     type: string
