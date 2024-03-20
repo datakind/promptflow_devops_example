@@ -161,6 +161,5 @@ cython_debug/
 
 .env
 __pycache__/
-.promptflow/*
-!.promptflow/flow.tools.json
-.runs/
+.promptflow/
+.runs
