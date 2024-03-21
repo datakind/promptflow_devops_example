@@ -14,7 +14,7 @@ The flow also includes:
 
 1. Content safety filtering
 2. Prompt variants
-3. State grounding
+3. State grounding.
 4. Dynamic grounding using deepeval
 
 ## Setup
