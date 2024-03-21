@@ -40,7 +40,7 @@ jobs:
         #pf connection create --file ./openai.yaml --set api_key=${{ secrets.OPENAI_API_KEY }}  --name open_ai_connection 
         pf connection create --file ./azure_content_safety_connection.yaml --set api_key=${{ secrets.CONTENT_SAFETY_KEY }} --set endpoint=${{ secrets.CONTENT_SAFETY_ENDPOINT }} --name azure_content_safety_connection 
         pf connection create --file ./azure_openai.yaml --set api_key=${{ secrets.OPENAI_API_KEY }} --set api_base=${{ secrets.OPENAI_API_ENDPOINT }} --name azure_openai 
-        pf run create --flow . --data data.jsonl --stream  --column-mapping query='${data.query}' context='${data.context}' --name base_run
+        pf run create --flow . --data data.jsonl --stream  --column-mapping chat_history='${data.chat_history}' question='${data.question}' context='${data.context}' --name base_run
         pf run show-details -n base_run
         pf run show-metrics -n base_run
         # pf run visualize -n base_run
