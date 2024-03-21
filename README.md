@@ -40,6 +40,16 @@ You will also need to configure LLM keys. The demo assumes Azure OpenAI, but scr
 1. Copy `.env.example` to `.env`
 2. Set keys appropriately
 
+## Azure versus OpenAI
+
+The code is configured to run with Azure OpenAI. You can also run with OpenAI directly as follows:
+
+1. In promptflow, create a new OpenAI conntection (in VS code select 'P' promptflow on left,click + under connections). For command line creation, see `.github/test_deploy,yml`)
+
+2. Set connection in all LLM nodes in the flow using VS code (click on them, change connection)
+
+3. In `deep_eval.py` ajust code to use OpenAIChat instead of AzureOpenAI. At some point this will be a settings
+
 # Development
 
 ## Pre-commit hooks
