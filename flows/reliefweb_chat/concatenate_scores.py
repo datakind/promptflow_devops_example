@@ -31,7 +31,7 @@ def concat_results(groundesness_score: str):
             score = np.nan
             item = item["name"]
             errors.append({"name": item, "msg": str(e), "data": item["score"]})
-        score_list.append({"name": item, "score": score})
+        score_list.append({"name": item["name"], "score": score})
 
     variant_level_result = {}
     for item in score_list:
