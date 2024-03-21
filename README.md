@@ -50,6 +50,8 @@ The code is configured to run with Azure OpenAI. You can also run with OpenAI di
 
 3. In `deep_eval.py` ajust code to use OpenAIChat instead of AzureOpenAI. At some point this will be a settings
 
+Note, if using promptflow in Azure ML, you can explore other model connections. After creating an appropriate deployment, follow the steps above.
+
 # Development
 
 ## Pre-commit hooks
