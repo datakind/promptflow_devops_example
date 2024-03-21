@@ -26,6 +26,9 @@ outputs:
   full_output:
     type: string
     reference: ${process_output.output}
+  groundedness_score:
+    type: string
+    reference: ${groundedness_check.output}
 nodes:
 - name: extract_entities
   type: llm
