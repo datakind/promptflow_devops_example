@@ -48,7 +48,7 @@ The code is configured to run with Azure OpenAI. You can also run with OpenAI di
 
 2. Set connection in all LLM nodes in the flow using VS code (click on them, change connection)
 
-3. In `deep_eval.py` ajust code to use OpenAIChat instead of AzureOpenAI. At some point this will be a settings
+3. In `deep_eval.py` adjust code to use OpenAIChat instead of AzureOpenAI. At some point this will be a settings
 
 Note, if using promptflow in Azure ML, you can explore other model connections. After creating an appropriate deployment, follow the steps above.
 
@@ -56,7 +56,7 @@ Note, if using promptflow in Azure ML, you can explore other model connections. 
 
 ## Pre-commit hooks
 
-The repo has been set up with black and flake8 pre-commit hooks. These are configured in the ``.pre-commit-config.yaml` file and initialized with `pre-commit autoupdate`.
+The repo has been set up with black and flake8 pre-commit hooks. These are configured in the `.pre-commit-config.yaml` file and initialized with `pre-commit autoupdate`.
 
 On a new repo, you must run `pre-commit install` to add pre-commit hooks.
 
