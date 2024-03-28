@@ -61,3 +61,9 @@ The repo has been set up with black and flake8 pre-commit hooks. These can be co
 On a new repo, you must run `pre-commit install` to add pre-commit hooks.
 
 To run code quality tests, you can run `pre-commit run --all-files`
+
+## Automatic testing using Promptflow
+
+Automatic tests are run using Github actions, which creates a promptflow connection and executes a promptflow evaluation run. The output is monitored by a script, and can be used as a template for adding promptflow tests as part of DevOps. 
+
+See `./github/workflows/test_deploy.yml` for more details, and 'Actions' in [the repo](https://github.com/datakind/promptflow_devops_example)
