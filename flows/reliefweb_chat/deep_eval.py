@@ -80,13 +80,19 @@ class AzureOpenAI(DeepEvalBaseLLM):
 # Deep eval, see https://github.com/confident-ai/deepeval
 @tool
 def test_case(
-    processed_output: dict, conn: AzureOpenAIConnection, deployment_name: str
-):
+    rweb_results: str,
+    user_question: str,
+    actual_output: str,
+    conn: AzureOpenAIConnection,
+    deployment_name: str,
+) -> dict:
     """
     An example function for evaluating a question using the deepeval library.
 
     Args:
-        processed_output (dict): The processed output containing the necessary data for evaluation.
+        rweb_results (str): The results from the ReliefWeb API.
+        user_question (str): The user question to evaluate.
+        actual_output (str): The actual output to evaluate against.
         conn (AzureOpenAIConnection): The AzureOpenAIConnection object for connecting to Azure services.
         deployment_name (str): The name of the deployment.
 
@@ -94,13 +100,6 @@ def test_case(
         dict: A dictionary containing the evaluation score and reason.
     """
     conn_dict = dict(conn)
-
-    rweb_results = processed_output["rweb_results"]
-    input = ""
-    for r in rweb_results:
-        input += r["title"] + " " + str(r["body"])
-
-    actual_output = processed_output["llm_summary_result_processed"]
 
     # Set up LLM connection
     custom_model = AzureChatOpenAI(
@@ -110,10 +109,6 @@ def test_case(
         openai_api_key=conn_dict["api_key"],
     )
     model = AzureOpenAI(model=custom_model)
-
-    user_question = processed_output["user_question"]
-    actual_output = (processed_output["llm_question_result"],)
-    rweb_results = str(processed_output["rweb_results"])
 
     print("user_question: ", user_question)
     print("actual_output: ", actual_output)
@@ -128,4 +123,4 @@ def test_case(
 
     metric.measure(test_case)
 
-    return {"deepeval_score": metric.score, "deepevalscore_reason": metric.reason}
+    return {"deep_eval_score": metric.score, "deep_eval_score_reason": metric.reason}

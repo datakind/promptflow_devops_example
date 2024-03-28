@@ -14,6 +14,8 @@ def process_output(
     refs: str,
     llm_question_result: str,
     content_safety_result: str,
+    deep_eval_score: float,
+    deep_eval_score_reason: str,
 ) -> dict:
 
     # TODO Hack for bug where running full output generates different output compared to just running this node.
