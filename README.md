@@ -2,28 +2,42 @@
 
 ![ReliefWeb Promptflow Demo](./rweb_flow.png)
 
-This repo contains sample code for workshops on using Promptflow as part of operationlizing LLMs for humanitarian response. The example flow does the following ...
+This repo contains sample code for using Promptflow as part of operationlizing LLMs for humanitarian response. 
 
-1. Extracts entities from user input and converts them to a query on ReliefWeb
+The example flow does the following ...
+
+1. Extracts entities from user input and converts them to a query on [ReliefWeb](https://reliefweb.int/)
 2. Runs query again Reliefweb API to get situation reports for the user's request
 3. Summarized the response
-4. Extracts references 
-5. Presents results to the user
+4. Answers the user question
+5. Extracts references 
+6. Presents results to the user
+
+It is a very basic app and hasn't been tuned for production use, more work would be needed for working with the ReliefWeb API. It is meant to demonstrate various things to consider when operationalizing LLM solutions. 
 
 The flow also includes:
 
 1. Content safety filtering
 2. Prompt variants
-3. State grounding
+3. Groundedness checks
 4. Dynamic grounding using deepeval
 
+And the repo includes GitHub actions to run ...
+
+1. Promptflow automated groundedness tests
+2. Code quality tests 
+
 ## Setup
+### Environment
 
 1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html) by selecting the installer that fits your OS version. Once it is installed you may have to restart your terminal (closing your terminal and opening again)
 2. In this directory, open terminal
 3. `conda env create -f environment.yml`
 4. `conda activate promtpflow-serve`
 
+Note: The repo should support both Open AI and Azurer Open AI depending on the variables set in the `.env` file. 
+
+### Promptflow
 Promptflow can be run from the commandline, see [documentation](https://microsoft.github.io/promptflow/index.html) for further information, but a nice way to use it is to use VS Code which has a user interface for managing flows. To use this ..
 
 1. Download [VS Code](https://code.visualstudio.com/download)
