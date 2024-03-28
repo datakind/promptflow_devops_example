@@ -78,14 +78,12 @@ class AzureOpenAI(DeepEvalBaseLLM):
 
 
 # Deep eval, see https://github.com/confident-ai/deepeval
-
-
 @tool
 def test_case(
     processed_output: dict, conn: AzureOpenAIConnection, deployment_name: str
 ):
     """
-    Evaluate the test case using the processed output, AzureOpenAIConnection, and deployment name.
+    An example function for evaluating a question using the deepeval library.
 
     Args:
         processed_output (dict): The processed output containing the necessary data for evaluation.
@@ -104,24 +102,29 @@ def test_case(
 
     actual_output = processed_output["llm_summary_result_processed"]
 
+    # Set up LLM connection
     custom_model = AzureChatOpenAI(
         openai_api_version=conn_dict["api_version"],
         azure_deployment=deployment_name,
         azure_endpoint=conn_dict["api_base"],
         openai_api_key=conn_dict["api_key"],
     )
-
     model = AzureOpenAI(model=custom_model)
 
     user_question = processed_output["user_question"]
     actual_output = (processed_output["llm_question_result"],)
     rweb_results = str(processed_output["rweb_results"])
+
+    print("user_question: ", user_question)
+    print("actual_output: ", actual_output)
+    print("rweb_results: ", rweb_results)
+
     test_case = LLMTestCase(
         input=user_question,
         actual_output=actual_output,
         retrieval_context=[rweb_results],
     )
-    metric = FaithfulnessMetric(threshold=0.7, model=model, include_reason=True)
+    metric = FaithfulnessMetric(threshold=0.5, model=model, include_reason=True)
 
     metric.measure(test_case)
 

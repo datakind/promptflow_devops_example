@@ -144,6 +144,14 @@ nodes:
   inputs:
     results: ${concatenate_scores.output}
   aggregation: true
+- name: Content_Safety_Text_Analyze__4b9v
+  type: python
+  source:
+    type: package
+    tool: promptflow.tools.azure_content_safety.analyze_text
+  inputs:
+    connection: azure_content_safety_connection
+    text: ${inputs.question}
 node_variants:
   summarize:
     default_variant_id: variant_0
