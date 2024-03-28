@@ -35,7 +35,8 @@ And the repo includes GitHub actions to run ...
 3. `conda env create -f environment.yml`
 4. `conda activate promtpflow-serve`
 
-Note: The repo should support both Open AI and Azurer Open AI depending on the variables set in the `.env` file. 
+The repo should support both OpenAI and Azurer OpenAI depending on the variables set in the `.env` file. If you want
+to test content safety, you will need to set up an Azure content safety instance, or dicoennect that connection in the flow and implement your own custom solution.
 
 ### Promptflow
 Promptflow can be run from the commandline, see [documentation](https://microsoft.github.io/promptflow/index.html) for further information, but a nice way to use it is to use VS Code which has a user interface for managing flows. To use this ..
