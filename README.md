@@ -2,7 +2,7 @@
 
 ![ReliefWeb Promptflow Demo](./rweb_flow.png)
 
-This repo contains sample code for workshops on using Promptflow as part of operationlizing LLMs for humanitarian response. The example flow does the following:
+This repo contains sample code for workshops on using Promptflow as part of operationlizing LLMs for humanitarian response. The example flow does the following ...
 
 1. Extracts entities from user input and converts them to a query on ReliefWeb
 2. Runs query again Reliefweb API to get situation reports for the user's request
