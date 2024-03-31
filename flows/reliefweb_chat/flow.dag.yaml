@@ -477,7 +477,7 @@ inputs:
 outputs:
   output:
     type: string
-    reference: ${process_output.output.text_output}
+    reference: ${content_safety_ouput.output}
     is_chat_output: true
   full_output:
     type: string
@@ -498,7 +498,7 @@ nodes:
   connection: azure_openai
   api: chat
   activate:
-    when: ${content_safety.output.suggested_action}
+    when: ${content_safety_input.output.suggested_action}
     is: Accept
 - name: create_rweb_query
   type: llm
@@ -533,7 +533,7 @@ nodes:
     llm_summary_result: ${summarize.output}
     llm_question_result: ${answer_question.output}
     rweb_query: ${create_rweb_query.output}
-    content_safety_result: ${content_safety.output.suggested_action}
+    content_safety_result: ${content_safety_input.output.suggested_action}
     deep_eval_score: ${deep_eval.output.deep_eval_score}
     deep_eval_score_reason: ${deep_eval.output.deep_eval_score_reason}
 - name: extract_references
@@ -558,14 +558,6 @@ nodes:
     reliefweb_data: ${get_rweb_results.output}
   connection: azure_openai
   api: chat
-- name: content_safety
-  type: python
-  source:
-    type: package
-    tool: promptflow.tools.azure_content_safety.analyze_text
-  inputs:
-    connection: azure_content_safety_connection
-    text: ${inputs.question}
 - name: concatenate_scores
   type: python
   source:
@@ -593,14 +585,6 @@ nodes:
   inputs:
     results: ${concatenate_scores.output}
   aggregation: true
-- name: Content_Safety_Text_Analyze__4b9v
-  type: python
-  source:
-    type: package
-    tool: promptflow.tools.azure_content_safety.analyze_text
-  inputs:
-    connection: azure_content_safety_connection
-    text: ${inputs.question}
 - name: deep_eval
   type: python
   source:
@@ -612,6 +596,24 @@ nodes:
     actual_output: ${answer_question.output}
     conn: azure_openai
     deployment_name: gpt-35-turbo-16k
+- name: content_safety_input
+  type: python
+  source:
+    type: code
+    path: content_safety_input.py
+  inputs:
+    text: ${inputs.question}
+    hate_category: medium
+    self_harm_category: medium
+    sexual_category: medium
+    violence_category: medium
+- name: content_safety_ouput
+  type: python
+  source:
+    type: code
+    path: content_safety_ouput.py
+  inputs:
+    text: ${process_output.output.llm_question_result}
 node_variants:
   summarize:
     default_variant_id: variant_0

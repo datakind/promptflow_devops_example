@@ -17,7 +17,27 @@ def process_output(
     deep_eval_score: float,
     deep_eval_score_reason: str,
 ) -> dict:
+    """
+    Process the output of the ReliefWeb chat flow.
 
+    Args:
+        user_question (str): The user's question.
+        query_entities (str): The query entities.
+        rweb_query (str): The ReliefWeb query.
+        rweb_results (str): The ReliefWeb results.
+        llm_summary_result (str): The LLM summary result.
+        refs (str): The references.
+        llm_question_result (str): The LLM question result.
+        content_safety_result (str): The content safety result.
+        deep_eval_score (float): The deep evaluation score.
+        deep_eval_score_reason (str): The reason for the deep evaluation score.
+
+    Returns:
+        dict: The processed output.
+
+    Raises:
+        None
+    """
     # TODO Hack for bug where running full output generates different output compared to just running this node.
     if "suggested_action" in content_safety_result:
         content_safety_result = content_safety_result["suggested_action"]
@@ -40,6 +60,12 @@ def process_output(
 
         refs = json.loads(refs)
         rweb_results = json.loads(rweb_results)
+
+        # If deep eval returned anything less than a perfect score, alert the user to the potential
+        # concerns with the output
+        if deep_eval_score < 1.0:
+            llm_question_result += f"\n\nWarning! Fact checker evaluation returned a score of {deep_eval_score}/1.0"
+            llm_question_result += f"Reason:\n\n{deep_eval_score_reason}"
 
         full_output = {
             "user_question": user_question,
