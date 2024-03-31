@@ -93,6 +93,8 @@ def process_output(
         )
 
     full_output["content_safety_result"] = content_safety_result
+    full_output["deep_eval_score"] = deep_eval_score
+    full_output["deep_eval_score_reason"] = deep_eval_score_reason
 
     with open("output.json", "w") as f:
         json.dump(full_output, f, indent=4)

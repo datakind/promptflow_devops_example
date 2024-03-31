@@ -614,6 +614,10 @@ nodes:
     path: content_safety_ouput.py
   inputs:
     text: ${process_output.output.llm_question_result}
+    hate_category: Medium
+    self_harm_category: Medium
+    sexual_category: Medium
+    violence_category: Medium
 node_variants:
   summarize:
     default_variant_id: variant_0
