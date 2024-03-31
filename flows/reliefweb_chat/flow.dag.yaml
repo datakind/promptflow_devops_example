@@ -8,7 +8,7 @@ inputs:
     default: []
   question:
     type: string
-    default: How many children are affected bny the sudan crises?
+    default: What is the current status of internet providers in the Sudan crises?
   context:
     type: string
     default: "[     {         \"id\": 4042678,         \"title\": \"Sudan Regional
