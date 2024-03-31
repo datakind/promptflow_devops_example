@@ -595,7 +595,7 @@ nodes:
     user_question: ${inputs.question}
     actual_output: ${answer_question.output}
     conn: azure_openai
-    deployment_name: gpt-35-turbo-16k
+    deployment_name: gpt-4-turbo
 - name: content_safety_input
   type: python
   source:
