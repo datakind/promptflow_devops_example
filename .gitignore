@@ -163,3 +163,5 @@ cython_debug/
 __pycache__/
 .promptflow/
 .runs
+*.vscode
+output.*
