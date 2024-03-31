@@ -1,6 +1,6 @@
 # Introduction
 
-![ReliefWeb Promptflow Demo](./process.png)
+![ReliefWeb Promptflow Demo](./media/process.png)
 
 This repo contains sample code for using Promptflow as part of operationlizing LLMs for humanitarian response, as referenced in Blog post [A Humanitarian Crises Situation Report AI Assistant: Exploring LLMOps with Prompt Flow](https://medium.com/@astrobagel/a-humanitarian-crises-situation-report-ai-assistant-exploring-llmops-with-prompt-flow-32968b7a878b)
 
