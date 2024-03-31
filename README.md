@@ -2,7 +2,7 @@
 
 ![ReliefWeb Promptflow Demo](./rweb_flow.png)
 
-This repo contains sample code for using Promptflow as part of operationlizing LLMs for humanitarian response. 
+This repo contains sample code for using Promptflow as part of operationlizing LLMs for humanitarian response, as referenced in Blog post [A Humanitarian Crises Situation Report AI Assistant: Exploring LLMOps with Prompt Flow](https://medium.com/@astrobagel/a-humanitarian-crises-situation-report-ai-assistant-exploring-llmops-with-prompt-flow-32968b7a878b)
 
 The example flow does the following ...
 
@@ -28,6 +28,9 @@ And the repo includes GitHub actions to run ...
 2. Code quality tests 
 
 ## Setup
+
+For setup with screenshots, see also the blog post.
+
 ### Environment
 
 1. Install [miniconda](https://docs.conda.io/en/latest/miniconda.html) by selecting the installer that fits your OS version. Once it is installed you may have to restart your terminal (closing your terminal and opening again)
